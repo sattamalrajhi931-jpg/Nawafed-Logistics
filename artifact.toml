@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "نوافذ الغد للخدمات اللوجستية"
+version = "1.0.0"
+id = "artifacts/nawafith-alghed"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23826
+
+[services.development]
+run = "pnpm --filter @workspace/nawafith-alghed run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/nawafith-alghed", "run", "build" ]
+publicDir = "artifacts/nawafith-alghed/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23826"
+BASE_PATH = "/"
