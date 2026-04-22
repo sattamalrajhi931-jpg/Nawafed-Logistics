@@ -1,0 +1,214 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: mandoob
+    description: Mandoob registration operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /mandoob:
+    get:
+      operationId: listMandoob
+      tags: [mandoob]
+      summary: List mandoob registrations
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+      responses:
+        "200":
+          description: List of registrations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MandoobRegistration"
+    post:
+      operationId: createMandoob
+      tags: [mandoob]
+      summary: Submit a mandoob registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMandoobBody"
+      responses:
+        "201":
+          description: Registration created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MandoobRegistration"
+  /mandoob/stats:
+    get:
+      operationId: getMandoobStats
+      tags: [mandoob]
+      summary: Get registration statistics
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MandoobStats"
+  /mandoob/{id}:
+    patch:
+      operationId: updateMandoobStatus
+      tags: [mandoob]
+      summary: Update mandoob status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMandoobStatusBody"
+      responses:
+        "200":
+          description: Updated registration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MandoobRegistration"
+    delete:
+      operationId: deleteMandoob
+      tags: [mandoob]
+      summary: Delete a mandoob registration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    MandoobRegistration:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        phone:
+          type: string
+        nationalId:
+          type: string
+        city:
+          type: string
+        vehicleType:
+          type: string
+        hasLicense:
+          type: boolean
+        experience:
+          type: string
+        notes:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        createdAt:
+          type: string
+      required:
+        - id
+        - fullName
+        - phone
+        - nationalId
+        - city
+        - vehicleType
+        - hasLicense
+        - experience
+        - status
+        - createdAt
+    CreateMandoobBody:
+      type: object
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        nationalId:
+          type: string
+        city:
+          type: string
+        vehicleType:
+          type: string
+        hasLicense:
+          type: boolean
+        experience:
+          type: string
+        notes:
+          type: string
+      required:
+        - fullName
+        - phone
+        - nationalId
+        - city
+        - vehicleType
+        - hasLicense
+        - experience
+    UpdateMandoobStatusBody:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        notes:
+          type: string
+      required:
+        - status
+    MandoobStats:
+      type: object
+      properties:
+        total:
+          type: integer
+        pending:
+          type: integer
+        approved:
+          type: integer
+        rejected:
+          type: integer
+      required:
+        - total
+        - pending
+        - approved
+        - rejected
